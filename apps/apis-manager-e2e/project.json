@@ -1,0 +1,17 @@
+{
+  "name": "apis-manager-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "implicitDependencies": ["apis-manager"],
+  "targets": {
+    "e2e": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{e2eProjectRoot}"],
+      "options": {
+        "jestConfig": "apps/apis-manager-e2e/jest.config.cts",
+        "passWithNoTests": true
+      },
+      "dependsOn": ["apis-manager:build", "apis-manager:serve"]
+    }
+  }
+}
