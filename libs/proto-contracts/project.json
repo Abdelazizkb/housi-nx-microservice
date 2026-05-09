@@ -1,0 +1,20 @@
+{
+  "name": "proto-contracts",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/proto-contracts/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/proto-contracts",
+        "tsConfig": "libs/proto-contracts/tsconfig.lib.json",
+        "packageJson": "libs/proto-contracts/package.json",
+        "main": "libs/proto-contracts/src/index.ts",
+        "assets": ["libs/proto-contracts/*.md"]
+      }
+    }
+  }
+}
