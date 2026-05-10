@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  housi-auth-db:
+    image: postgres:15
+    ports:
+      - '5433:5432'
+    environment:
+      POSTGRES_USER: auth_dev
+      POSTGRES_PASSWORD: fake-local-password-123
+      POSTGRES_DB: auth_service_dev
+    volumes:
+      - housi-auth-db-data:/var/lib/postgresql/data
+
+volumes:
+  housi-auth-db-data:
+    driver: local
