@@ -5,7 +5,6 @@ import { BaseExceptionFilter } from '@nestjs/core';
 @Catch()
 export class GrpcToHttpExceptionFilter extends BaseExceptionFilter {
   override catch(exception: any, host: ArgumentsHost) {
-    console.log('GrpcToHttpExceptionFilter', exception);
     const grpcError = exception?.error ?? exception;
     const isGrpcError = grpcError?.code !== undefined;
 
@@ -16,8 +15,11 @@ export class GrpcToHttpExceptionFilter extends BaseExceptionFilter {
       : response.statusCode;
 
     response.status(status).json({
+      success: false,
       statusCode: status,
       message: grpcError?.details || 'Internal server error',
+      name: exception.name,
+      timestamp: new Date().toISOString(),
     });
   }
 }

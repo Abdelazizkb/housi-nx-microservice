@@ -14,11 +14,13 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const error = exception.getResponse();
 
     response.status(status).json({
+      success: false,
       statusCode: status,
       message:
         typeof error === 'string'
           ? error
           : (error as { message: string }).message,
+      name: exception.name,
       timestamp: new Date().toISOString(),
     });
   }
