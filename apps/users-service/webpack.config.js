@@ -1,21 +1,9 @@
 const { NxAppWebpackPlugin } = require('@nx/webpack/app-plugin');
-const { join, resolve } = require('path');
+const { join } = require('path');
 
 module.exports = {
-  resolve: {
-    alias: {
-      '@housi-nx-microservices/proto-contracts': resolve(
-        __dirname,
-        '../../libs/proto-contracts/src/index.ts',
-      ),
-      '@housi-nx-microservices/exceptions': resolve(
-        __dirname,
-        '../../libs/exceptions/src/index.ts',
-      ),
-    },
-  },
   output: {
-    path: join(__dirname, '../../dist/apps/apis-manager'),
+    path: join(__dirname, '../../dist/apps/users-service'),
     clean: true,
     ...(process.env.NODE_ENV !== 'production' && {
       devtoolModuleFilenameTemplate: '[absolute-resource-path]',

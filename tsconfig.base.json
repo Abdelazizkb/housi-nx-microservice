@@ -16,7 +16,8 @@
     "paths": {
       "@housi-nx-microservices/proto-contracts": [
         "./libs/proto-contracts/src/index.ts"
-      ]
+      ],
+      "@housi-nx-microservices/exceptions": ["./libs/exceptions/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

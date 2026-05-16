@@ -5,15 +5,14 @@ package auth;
 // AuthService exposes registration and authentication RPCs for client accounts.
 service AuthService {
   // Register creates a new account from email and password and returns an auth token.
-  rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
+  rpc HealthCheck (HealthCheckRequest) returns (HealthCheckResponse);
   rpc Register(RegisterRequest) returns (RegisterResponse);
   rpc ValidateEmail(ValidateEmailRequest) returns (ValidateEmailResponse);
   rpc Login(LoginRequest) returns (LoginResponse);
   rpc Logout(LogoutRequest) returns (LogoutResponse);
 }
 
-message HealthCheckRequest {
-}
+message HealthCheckRequest {}
 
 message HealthCheckResponse {
   bool   success = 1;
