@@ -8,6 +8,10 @@ module.exports = {
         __dirname,
         '../../libs/proto-contracts/src/index.ts',
       ),
+      '@housi-nx-microservices/exceptions': resolve(
+        __dirname,
+        '../../libs/exceptions/src/index.ts',
+      ),
     },
   },
   output: {

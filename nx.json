@@ -39,7 +39,7 @@
       "options": {
         "targetName": "test"
       },
-      "exclude": []
+      "exclude": ["apps/users-service-e2e/**/*"]
     }
   ],
   "targetDefaults": {

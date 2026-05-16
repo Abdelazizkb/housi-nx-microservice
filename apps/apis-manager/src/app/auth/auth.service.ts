@@ -1,14 +1,17 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { ClientGrpc } from '@nestjs/microservices';
+import { Inject, Injectable, Logger } from '@nestjs/common';
+import { ClientGrpc, RpcException } from '@nestjs/microservices';
 import {
   AUTH_PACKAGE_CLIENT,
   AuthServiceRPC,
   GrpcService,
   HealthCheckResponse,
 } from '@housi-nx-microservices/proto-contracts';
+import { lastValueFrom } from 'rxjs';
+import { RegisterDto } from './dtos/register.dtos';
 
 @Injectable()
 export class AuthService {
+  private logger = new Logger(AuthService.name);
   public authService: AuthServiceRPC;
 
   constructor(
@@ -21,5 +24,12 @@ export class AuthService {
 
   healthCheck(): HealthCheckResponse {
     return this.authService.healthCheck({});
+  }
+
+  async register(registerPayload: RegisterDto) {
+    const response = await lastValueFrom(
+      this.authService.register(registerPayload),
+    );
+    return response;
   }
 }
