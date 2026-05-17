@@ -16,6 +16,18 @@ export interface RegisterResponse {
   message: string;
 }
 
+export interface RegisterRequest {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+}
+
+export interface RegisterResponse {
+  success: boolean;
+  message: string;
+}
+
 export interface AuthServiceRPC {
   healthCheck(request: HealthCheckRequest): HealthCheckResponse;
   register(request: RegisterRequest): Observable<RegisterResponse>;
