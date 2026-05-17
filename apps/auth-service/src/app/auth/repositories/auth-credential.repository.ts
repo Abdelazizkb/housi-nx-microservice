@@ -1,9 +1,11 @@
-import { DataSource } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { AuthCredentialEntity } from '../../database/entities/auth-credential.entity';
 import {
   AUTH_CREDENTIAL_REPOSITORY,
   AUTH_DATA_SOURCE,
-} from '../../../common/constants';
+} from '../../common/constants';
+
+export type AuthCredentialRepository = Repository<AuthCredentialEntity>;
 
 export const authCredentialRepository = {
   provide: AUTH_CREDENTIAL_REPOSITORY,

@@ -3,13 +3,22 @@ syntax = "proto3";
 package users;
 
 service UsersService{
-  rpc Create(CreateUserRequest) returns (CreateUserResponse);
+  rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
+}
+
+message HealthCheckRequest {}
+
+message HealthCheckResponse {
+  bool   success = 1;
+  string message = 2;
 }
 
 message CreateUserRequest {
-  string credentialId = 1;
-  string firstName    = 2;
-  string laststName   = 3;
+  string credential_id = 1;
+  string first_name    = 2;
+  string last_name     = 3;
+  string email         = 4;
 }
 
 message CreateUserResponse {

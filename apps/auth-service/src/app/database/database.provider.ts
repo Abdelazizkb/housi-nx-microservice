@@ -1,5 +1,5 @@
 import { DataSource } from 'typeorm';
-import { AUTH_DATA_SOURCE } from '../../common/constants';
+import { AUTH_DATA_SOURCE } from '../common/constants';
 import { AuthCredentialEntity } from './entities/auth-credential.entity';
 import { AuthRoleEntity } from './entities/auth-role.entity';
 import { VerificationCodeEntity } from './entities/verification-code.entity';
