@@ -1,10 +1,20 @@
 import { Observable } from 'rxjs';
+import {
+  HealthCheckRequest,
+  HealthCheckResponse,
+} from './health-check.interface';
 
-export interface HealthCheckResponse {
+export interface RegisterRequest {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+}
+
+export interface RegisterResponse {
   success: boolean;
   message: string;
 }
-export type HealthCheckRequest = Record<string, never>;
 
 export interface RegisterRequest {
   firstName: string;

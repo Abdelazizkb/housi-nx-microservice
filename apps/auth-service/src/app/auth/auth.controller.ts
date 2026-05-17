@@ -24,7 +24,6 @@ export class AuthController {
     @Payload(new ValidationPipe({ whitelist: true }))
     registerPayload: RegisterDto,
   ): Promise<RegisterResponse> {
-    console.log('Register');
     return this.authService.register(registerPayload);
   }
 }

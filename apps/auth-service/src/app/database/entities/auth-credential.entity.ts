@@ -4,9 +4,11 @@ import {
   CreateDateColumn,
   Entity,
   PrimaryGeneratedColumn,
+  Unique,
   UpdateDateColumn,
 } from 'typeorm';
 
+@Unique(['email'])
 @Entity({ name: 'auth_credentials' })
 export class AuthCredentialEntity extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
