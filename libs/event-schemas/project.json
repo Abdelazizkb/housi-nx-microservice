@@ -1,0 +1,20 @@
+{
+  "name": "event-schemas",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/event-schemas/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/event-schemas",
+        "tsConfig": "libs/event-schemas/tsconfig.lib.json",
+        "packageJson": "libs/event-schemas/package.json",
+        "main": "libs/event-schemas/src/index.ts",
+        "assets": ["libs/event-schemas/*.md"]
+      }
+    }
+  }
+}

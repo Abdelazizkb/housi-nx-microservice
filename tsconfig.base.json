@@ -13,11 +13,16 @@
     "lib": ["es2020", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
+    "ignoreDeprecations": "6.0",
+    "strictPropertyInitialization": false,
     "paths": {
       "@housi-nx-microservices/proto-contracts": [
         "./libs/proto-contracts/src/index.ts"
       ],
-      "@housi-nx-microservices/exceptions": ["./libs/exceptions/src/index.ts"]
+      "@housi-nx-microservices/exceptions": ["./libs/exceptions/src/index.ts"],
+      "@housi-nx-microservices/event-schemas": [
+        "./libs/event-schemas/src/index.ts"
+      ]
     }
   },
   "exclude": ["node_modules", "tmp"]
