@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Post, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dtos/register.dtos';
+import { ValidateEmailDto } from './dtos/verify-email.dtos';
 
 @Controller('auth')
 export class AuthController {
@@ -12,9 +13,15 @@ export class AuthController {
   }
 
   @Post('register')
-  register(
-    @Body(new ValidationPipe({ whitelist: true })) registerPayload: RegisterDto,
-  ) {
+  register(@Body() registerPayload: RegisterDto) {
     return this.authService.register(registerPayload);
+  }
+
+  @Post('validate-email')
+  validateEmail(
+    @Body()
+    validateEmailPayload: ValidateEmailDto,
+  ) {
+    return this.authService.validateEmail(validateEmailPayload);
   }
 }

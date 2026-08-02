@@ -91,14 +91,16 @@ export class RegisterUseCase {
       });
     }
 
-    await this.accountVerificationService.issueVerificationCode(
-      newCredential.id,
-      VerificationTypesEnum.VERIFY_EMAIL,
-    );
+    const { verificationId } =
+      await this.accountVerificationService.issueVerificationCode(
+        newCredential.id,
+        VerificationTypesEnum.VERIFY_EMAIL,
+      );
 
     return {
       success: true,
       message: 'User registered successfully',
+      verificationId,
     };
   }
 

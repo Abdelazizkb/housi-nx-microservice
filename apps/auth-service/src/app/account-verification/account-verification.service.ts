@@ -10,6 +10,7 @@ import {
   notificationMessages,
   NOTIFICATIONS_PACKAGE_CLIENT,
 } from '@housi-nx-microservices/event-schemas';
+import { randomInt } from 'crypto';
 
 @Injectable()
 export class AccountVerificationService {
@@ -25,10 +26,10 @@ export class AccountVerificationService {
   async issueVerificationCode(
     credentialId: string,
     type: VerificationTypesEnum,
-  ): Promise<number> {
+  ): Promise<{ verificationId: string }> {
     const verificationCode = this.generateVerificationCode();
 
-    await this.verificationCodeRepository.upsert(
+    const verificationEntity = await this.verificationCodeRepository.upsert(
       {
         credentialId,
         type,
@@ -40,49 +41,31 @@ export class AccountVerificationService {
       },
     );
 
-    console.log('SEND_EMAIL_VERIFICATION', {
-      credentialId,
-      code: verificationCode,
-      type,
-    });
-    this.Logger.log('Emitting SEND_EMAIL_VERIFICATION event', {
-      verificationCode,
-    });
-
-    this.notificationsClient
-      .emit(notificationMessages.SEND_EMAIL_VERIFICATION, {
-        credentialId,
-        code: verificationCode,
-        type,
-      })
-      .subscribe();
-
-    return verificationCode;
-  }
-
-  async confirmVerificationCode(
-    credentialId: string,
-    type: VerificationTypesEnum,
-    code: number,
-  ): Promise<boolean> {
-    const verificationCode = await this.verificationCodeRepository.findOne({
-      where: {
-        credentialId,
-        type,
-        expiresAt: MoreThan(new Date()),
-      },
-    });
-
-    if (!verificationCode) {
+    if (!verificationEntity?.raw[0]?.id) {
       throw new RpcException({
-        message: 'Invalid or expired verification code',
-        code: httpToGrpc.get(HttpStatus.NOT_FOUND),
+        message: 'Something went wrong',
+        code: httpToGrpc.get(HttpStatus.CONFLICT),
       });
     }
 
+    this.emitEmailVerification(verificationCode, type);
+
+    return { verificationId: verificationEntity.raw[0].id };
+  }
+
+  async confirmVerificationCode(
+    verificationId: string,
+    type: VerificationTypesEnum,
+    code: number,
+  ): Promise<true> | never {
+    const verificationCodeEntity = await this.getVerificationCodeEntity(
+      verificationId,
+      type,
+    );
+
     const isValid = await this.hashingProvider.compare(
       code.toString(),
-      verificationCode.code,
+      verificationCodeEntity.code,
     );
 
     if (!isValid) {
@@ -95,12 +78,42 @@ export class AccountVerificationService {
     return true;
   }
 
+  private emitEmailVerification(verificationCode: number, type: string): void {
+    this.notificationsClient
+      .emit(notificationMessages.SEND_EMAIL_VERIFICATION, {
+        code: verificationCode,
+        type,
+      })
+      .subscribe();
+  }
+
+  private async getVerificationCodeEntity(
+    verificationId: string,
+    type: VerificationTypesEnum,
+  ) {
+    const verificationCode = await this.verificationCodeRepository.findOne({
+      where: {
+        id: verificationId,
+        type,
+        expiresAt: MoreThan(new Date()),
+      },
+    });
+
+    if (!verificationCode) {
+      throw new RpcException({
+        message: 'Invalid or expired verification code',
+        code: httpToGrpc.get(HttpStatus.NOT_FOUND),
+      });
+    }
+    return verificationCode;
+  }
+
   private generateVerificationCode(): number {
     const length =
       parseInt(process.env.VERIFICATION_CODE_LENGTH ?? '6', 10) || 6;
     const min = 10 ** (length - 1);
-    const max = 10 ** length - 1;
-    return Math.floor(min + Math.random() * (max - min + 1));
+    const max = 10 ** length;
+    return randomInt(min, max);
   }
 
   private generateVerificationCodeExpirationDate(): Date {

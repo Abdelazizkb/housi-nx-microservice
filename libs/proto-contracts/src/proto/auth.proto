@@ -29,10 +29,13 @@ message RegisterRequest {
 message RegisterResponse {
   bool   success = 1;
   string message = 2;
+  string verification_id = 3;
 }
 
 message ValidateEmailRequest {
-  string email = 1;
+  string verification_id = 1;
+  int32  code          = 2;
+  string type          = 3;
 }
 
 message ValidateEmailResponse {

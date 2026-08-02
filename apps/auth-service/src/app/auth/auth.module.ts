@@ -7,6 +7,7 @@ import { usersGrpcClientModule } from '../clients/users.grpc-client';
 import { RegisterUseCase } from './usecases/register.usecase';
 import { HashingModule } from '../hashing/hashing.module';
 import { AccountVerificationModule } from '../account-verification/account-verification.module';
+import { VerifyEmailUsecase } from './usecases/verify-email.usecase';
 
 @Module({
   imports: [usersGrpcClientModule, AccountVerificationModule, HashingModule],
@@ -14,6 +15,7 @@ import { AccountVerificationModule } from '../account-verification/account-verif
   providers: [
     AuthService,
     RegisterUseCase,
+    VerifyEmailUsecase,
     authCredentialRepository,
     authRoleRepository,
   ],
