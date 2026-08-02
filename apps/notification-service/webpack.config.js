@@ -19,7 +19,7 @@ module.exports = {
     },
   },
   output: {
-    path: join(__dirname, '../../dist/apps/auth-service'),
+    path: join(__dirname, '../../dist/apps/notification-service'),
     clean: true,
     ...(process.env.NODE_ENV !== 'production' && {
       devtoolModuleFilenameTemplate: '[absolute-resource-path]',

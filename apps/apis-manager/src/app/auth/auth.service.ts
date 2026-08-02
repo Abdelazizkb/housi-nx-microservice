@@ -8,6 +8,7 @@ import {
 } from '@housi-nx-microservices/proto-contracts';
 import { lastValueFrom } from 'rxjs';
 import { RegisterDto } from './dtos/register.dtos';
+import { ValidateEmailDto } from './dtos/verify-email.dtos';
 
 @Injectable()
 export class AuthService {
@@ -29,6 +30,13 @@ export class AuthService {
   async register(registerPayload: RegisterDto) {
     const response = await lastValueFrom(
       this.authService.register(registerPayload),
+    );
+    return response;
+  }
+
+  async validateEmail(validateEmailPayload: ValidateEmailDto) {
+    const response = await lastValueFrom(
+      this.authService.validateEmail(validateEmailPayload),
     );
     return response;
   }

@@ -7,7 +7,6 @@ import {
   UsersServiceRPC,
 } from '@housi-nx-microservices/proto-contracts';
 import { RegisterDto } from '../dtos/register.dtos';
-import { AuthService } from '../auth.service';
 import {
   BadRequestException,
   HttpStatus,
@@ -21,7 +20,6 @@ import {
 } from '../../common/constants';
 import { AuthCredentialRepository } from '../repositories/auth-credential.repository';
 import { AuthRoleRepository } from '../repositories/auth-role.repository';
-import { HashingProvider } from '../hashing.provider';
 import { DataSource, EntityManager } from 'typeorm';
 import { ClientGrpc, RpcException } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
@@ -29,6 +27,9 @@ import { AuthCredentialEntity } from '../../database/entities/auth-credential.en
 import { httpToGrpc } from '@housi-nx-microservices/exceptions';
 import { AuthRoleEntity } from '../../database/entities/auth-role.entity';
 import { AuthRoleNamesEnum } from '../../database/enums/role-name.enum';
+import { HashingProvider } from '../../hashing/hashing.provider';
+import { AccountVerificationService } from '../../account-verification/account-verification.service';
+import { VerificationTypesEnum } from '../../database/enums/verification-type.enum';
 
 @Injectable()
 export class RegisterUseCase {
@@ -45,6 +46,8 @@ export class RegisterUseCase {
     @Inject(AUTH_DATA_SOURCE) private readonly dataSource: DataSource,
 
     @Inject(USERS_PACKAGE_CLIENT) private readonly usersClient: ClientGrpc,
+
+    private readonly accountVerificationService: AccountVerificationService,
   ) {}
 
   onModuleInit() {
@@ -62,7 +65,7 @@ export class RegisterUseCase {
       throw new BadRequestException('Email already exists');
     }
 
-    await this.dataSource.transaction(async (manager) => {
+    const newCredential = await this.dataSource.transaction(async (manager) => {
       const newCredential = await this.createAuthCredential(
         manager,
         registerPayload,
@@ -70,22 +73,38 @@ export class RegisterUseCase {
 
       await this.createAuthRole(manager, newCredential.id);
 
-      await this.createUser(manager, {
+      return newCredential;
+    });
+
+    try {
+      await this.createUser({
         credentialId: newCredential.id,
         firstName: registerPayload.firstName,
         lastName: registerPayload.lastName,
         email: registerPayload.email,
       });
-    });
+    } catch (error) {
+      this.rollbackTransaction(newCredential);
+      throw new RpcException({
+        message: `Failed to create user for credential with id : ${newCredential.id} - Transaction rolled back`,
+        statusCode: httpToGrpc.get(HttpStatus.INTERNAL_SERVER_ERROR),
+      });
+    }
+
+    const { verificationId } =
+      await this.accountVerificationService.issueVerificationCode(
+        newCredential.id,
+        VerificationTypesEnum.VERIFY_EMAIL,
+      );
 
     return {
       success: true,
       message: 'User registered successfully',
+      verificationId,
     };
   }
 
   private async createUser(
-    manager: EntityManager,
     registerPayload: CreateUserRequest,
   ): Promise<CreateUserResponse> {
     const response = await lastValueFrom(
@@ -136,5 +155,16 @@ export class RegisterUseCase {
     });
     await manager.save(AuthRoleEntity, newRole);
     return newRole;
+  }
+
+  private async rollbackTransaction(credential: AuthCredentialEntity) {
+    await this.authCredentialRepository
+      .delete({ id: credential.id })
+      .catch(() => {
+        throw new RpcException({
+          message: `Failed to rollback for credential with id : ${credential.id} after creating user failed`,
+          statusCode: httpToGrpc.get(HttpStatus.INTERNAL_SERVER_ERROR),
+        });
+      });
   }
 }
